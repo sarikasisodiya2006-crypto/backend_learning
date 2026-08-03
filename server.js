@@ -269,6 +269,17 @@ app.post("/createStudent",async(req,res)=>{
 
 
 
+        //=======logout user========  
+        app.get("/logout",authMiddelware,(req,res)=>{
+          try{
+          res.clearCookie("givenToken");
+          res.send("User logged out successfully!");
+          } catch(err){
+            console.log(err);
+            res.status(500).send("SERVER ERROR!");
+          }
+        });
+
 
 
 
