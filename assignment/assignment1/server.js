@@ -7,7 +7,8 @@ const app = express();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const {registerModel , productModel} = require('./userModel.js');
-
+const validationSchema =  require('./validationSchema/createProductValidationSchema.js');
+const validationMiddleware = require('./validationSchema/validationMiddleware');
 
 
 app.use(express.json());
@@ -126,20 +127,20 @@ app.use(cookieParser());
 
 
         //=====create product=========
-        app.post("/createProduct",authMiddelware,async(req,res)=>{
+        app.post("/createProduct",authMiddelware,validationMiddleware(validationSchema),async(req,res)=>{
 
             try {
-                 const schema = joi.object({
-                 name: joi.string().required(),
-                 price: joi.number().min(0).required(),
-                 category: joi.string().valid("Electronics", "Clothing", "Books", "Home", "Sports").required(),
-                 SKU: joi.string().required(),
+            //      const schema = joi.object({
+            //      name: joi.string().required(),
+            //      price: joi.number().min(0).required(),
+            //      category: joi.string().valid("Electronics", "Clothing", "Books", "Home", "Sports").required(),
+            //      SKU: joi.string().required(),
 
-            });
-            const{error} = schema.validate(req.body);
-            if(error){
-                return req.status(400).send(error.detail[0].message);
-            }
+            // });
+            // const{error} = schema.validate(req.body);
+            // if(error){
+            //     return req.status(400).send(error.detail[0].message);
+            // }
 
              const productExist = await productModel.findOne({ SKU: req.body.SKU });
                 if (productExist) {
