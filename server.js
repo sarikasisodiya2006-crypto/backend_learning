@@ -146,7 +146,7 @@ app.post("/createStudent",async(req,res)=>{
                     //====LOGIN USER=====
     app.post("/login", async (req, res) => {
   try {
-    console.log(req.cookies);
+    console.log(req.cookies.givenToken);
     const validationSchema = joi.object({
       email: joi.string().email().required(),
       password: joi.string().min(8).max(20).required(),
