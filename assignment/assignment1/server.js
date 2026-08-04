@@ -9,7 +9,7 @@ const bcrypt = require("bcryptjs");
 const {registerModel , productModel} = require('./userModel.js');
 const validationSchema =  require('./validationSchema/createProductValidationSchema.js');
 const validationMiddleware = require('./validationSchema/validationMiddleware');
-
+const registerValidationSchema = require('./validationSchema/registerValidationSchema.js')
 
 app.use(express.json());
 app.use(cookieParser());
@@ -18,22 +18,22 @@ app.use(cookieParser());
 
 
    //=======user registration========
-   app.post("/register",async(req,res)=>{
+   app.post("/register",validationMiddleware(registerValidationSchema),async(req,res)=>{
     try{
-            const schema = joi.object({
-                firstname : joi.string().min(2).max(128).required().pattern(/^[a-zA-Z ]+$/).trim(),
-                lastname : joi.string().min(2).max(128).required().pattern(/^[a-zA-Z ]+$/).trim(),
-                email : joi.string().email().required().trim().lowercase(),
-                dob : joi.date().required(),
-                gender : joi.string().valid("male","female","other").required(),
-                createPassword : joi.string().min(2).max(128).required().trim(),
-                confirmPassword : joi.string().min(2).max(128).required().trim(),
-            });
+            // const schema = joi.object({
+            //     firstname : joi.string().min(2).max(128).required().pattern(/^[a-zA-Z ]+$/).trim(),
+            //     lastname : joi.string().min(2).max(128).required().pattern(/^[a-zA-Z ]+$/).trim(),
+            //     email : joi.string().email().required().trim().lowercase(),
+            //     dob : joi.date().required(),
+            //     gender : joi.string().valid("male","female","other").required(),
+            //     createPassword : joi.string().min(2).max(128).required().trim(),
+            //     confirmPassword : joi.string().min(2).max(128).required().trim(),
+            // });
 
-            const {error} = schema.validate(req.body);
-            if(error){
-                return res.status(400).send(error.details[0].message);
-            } ;
+            // const {error} = schema.validate(req.body);
+            // if(error){
+            //     return res.status(400).send(error.details[0].message);
+            // } ;
 
 
 
