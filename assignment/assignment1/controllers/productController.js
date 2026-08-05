@@ -1,96 +1,90 @@
-const { productModel } = require("../model");
+const {
+    createProductService,
+    getProductService,
+    deleteProductService,
+    updateProductService,
+} = require("../service/productService");
 
-const createProduct = async(req,res)=>{
+// =============== Create Product =================
 
-            try {
-             const productExist = await productModel.findOne({ SKU: req.body.SKU });
-                if (productExist) {
-                  return res.status(409).send("Product with this SKU already exists");
-                }
+const createProduct = async (req, res) => {
 
+    try {
 
-            const{name,price,category,SKU}= req.body;
-            let product = {
-                name:name,
-                price:price,
-                category:category,
-                SKU:SKU
-            };
-            console.log(product)
-                await productModel.create(product);
-                return res.status(209).send("product created successfully!");
-            } catch (error) {
-                console.log("err : ",error)
-                return res.status(400).send("internal server error");
-                
-            }
-           
-        }
+        const message = await createProductService(req.body);
 
+        return res.status(201).send(message);
 
-const getProduct = async(req,res)=>{
-            try {
-                const{page=1,limit=2,sort="asc"}=req.query;
+    } catch (err) {
 
-                let product = await productModel.find({})
-                .skip((Number(page)-1)*Number(limit))
-                .limit(Number(limit))
-                .sort({price: sort==="asc"?1:-1})
-                .select("-_id -__v -SKU");
+        console.log(err);
 
-               res.json(product);
-            } catch (error) {
-             console.log("err : ",error)
-                return res.status(400).send("internal server error");
-                   
-            }
-        }
+        return res.status(400).send(err.message);
+    }
+};
 
+// =============== Get Products =================
 
-const deleteStudentbySKU =  async(req,res)=>{
-            try {
-                const {sku}=req.params;
-                const product = await productModel.findOne({SKU:sku});
-                if(!product){
-                    return res.status(404).send("product not found");
-                }
-                await productModel.deleteOne({SKU:sku});
-                return res.status(200).send("product deleted !");
-                
-            } catch (error) {
-             console.log("err : ",error)
-                return res.status(400).send("internal server error");
-                      
-            }
+const getProduct = async (req, res) => {
 
-        }
+    try {
 
+        const { page = 1, limit = 2, sort = "asc" } = req.query;
 
-const updateProduct = async(req,res)=>{
+        const products = await getProductService(page, limit, sort);
 
-            const product = await productModel.findOne({ sku: req.params.sku });
+        return res.json(products);
 
-console.log(product);
-            try {
-                 const updateProduct= await productModel.findOneAndUpdate({SKU:req.params.sku},{$set:req.body},{ returnDocument: "after" });
+    } catch (err) {
 
-            if(!updateProduct){
-                return res.status(404).send("product not found");
-            }
+        console.log(err);
 
-            return res.json(updateProduct);
-            } catch (error) {
-                console.log("err : ",error)
-                return res.status(400).send("internal server error");
-            }
+        return res.status(400).send(err.message);
+    }
+};
 
-           
-        }
+// =============== Delete Product =================
 
-        module.exports ={
-         createProduct ,
-         getProduct,
-         deleteStudentbySKU ,
-            updateProduct
-            
-        }
+const deleteStudentbySKU = async (req, res) => {
+
+    try {
+
+        const message = await deleteProductService(req.params.sku);
+
+        return res.status(200).send(message);
+
+    } catch (err) {
+
+        console.log(err);
+
+        return res.status(400).send(err.message);
+    }
+};
+
+// =============== Update Product =================
+
+const updateProduct = async (req, res) => {
+
+    try {
+
+        const updatedProduct = await updateProductService(
+            req.params.sku,
+            req.body
+        );
+
+        return res.json(updatedProduct);
+
+    } catch (err) {
+
+        console.log(err);
+
+        return res.status(400).send(err.message);
+    }
+};
+
+module.exports = {
+    createProduct,
+    getProduct,
+    deleteStudentbySKU,
+    updateProduct,
+};
