@@ -1,9 +1,10 @@
 const dns = require("dns");
 dns.setServers(["8.8.8.8","8.8.4.4"]);
+require("dotenv").config();
 
 
 const mongoose = require("mongoose");
-const url = "mongodb+srv://sarikasisodiya2006_db_user:u8YkhR1qB5wZMqgt@cluster0.mql16jw.mongodb.net/userDB?appName=Cluster0";
+const url = process.env.MONGODB_URL;
 
 const connectDB = async()=>{
     await mongoose.connect(url);

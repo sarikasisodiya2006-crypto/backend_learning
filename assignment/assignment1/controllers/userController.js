@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const cookieParser = require("cookie-parser");
 
+
 const register = async(req,res)=>{
     try{
            
@@ -20,7 +21,7 @@ const register = async(req,res)=>{
         }
         else{
 
-            const hashedPassword = await bcrypt.hash(createPassword,10);
+            const hashedPassword = await bcrypt.hash(createPassword,Number(process.env.SALT));
         let userData = {
             firstname:firstname,
             lastname:lastname,
@@ -62,8 +63,8 @@ const register = async(req,res)=>{
                         .send("OOPS! Invalid credentials!!");
                     }
                     //generate a token and send it to the user
-                    let secretKey = "MySecretKey";
-                    const token=jwt.sign({userID:userExist._id},secretKey,{expiresIn:"1h"});
+                    let secretKey =  process.env.JWT_SECRETKEY;
+                    const token=jwt.sign({userID:userExist._id},process.env.JWT_SECRETKEY,{expiresIn:"1h"});
                 
                     res.cookie("givenToken",token,{httpOnly:true});
                 

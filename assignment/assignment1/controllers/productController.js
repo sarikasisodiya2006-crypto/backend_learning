@@ -32,9 +32,9 @@ const getProduct = async(req,res)=>{
             try {
                 const{page=1,limit=2,sort="asc"}=req.query;
 
-                let product = await productModel.findOne({})
-                .skip((page-1)*limit)
-                .limit(limit)
+                let product = await productModel.find({})
+                .skip((Number(page)-1)*Number(limit))
+                .limit(Number(limit))
                 .sort({price: sort==="asc"?1:-1})
                 .select("-_id -__v -SKU");
 

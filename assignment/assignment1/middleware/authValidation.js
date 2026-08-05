@@ -1,12 +1,13 @@
 const jwt = require("jsonwebtoken");
+
 const authMiddelware = (req,res,next)=>{
     try{
     const token =req.cookies.givenToken;
     if(!token){
         return res.status(401).send("Unauthorized");
     }
-let secretKey = "MySecretKey";
-    const decoded = jwt.verify(token,secretKey);
+let secretKey = process.env.JWT_SECRETKEY;
+    const decoded = jwt.verify(token, secretKey);
     if(!decoded){
         return res.status(401).send("Unauthorized");
     }
