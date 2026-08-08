@@ -36,6 +36,14 @@ const  registerSchema = new mongoose.Schema({
         required:true,
         enum:["male","female","other"],
     },
+    role:{
+        type:String,
+        enum:["user","admin","seller"],
+        required:true,
+        trim:true,
+        default:"user",
+        maxlength:10,
+    },
 
     Password:{
         type:String,

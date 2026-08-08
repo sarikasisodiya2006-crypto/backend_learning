@@ -11,8 +11,10 @@ const registerUser = async (data) => {
         email,
         dob,
         gender,
+        role,
         createPassword,
         confirmPassword,
+        
     } = data;
 
     if (createPassword !== confirmPassword) {
@@ -36,6 +38,7 @@ const registerUser = async (data) => {
         email,
         dob,
         gender,
+        role,
         Password: hashedPassword,
     };
 
@@ -65,7 +68,7 @@ const loginUser = async (data) => {
     }
 
     const token = jwt.sign(
-        { userID: userExist._id },
+        { userID: userExist._id ,role:userExist.role},
         process.env.JWT_SECRETKEY,
         { expiresIn: "1h" }
     );

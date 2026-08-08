@@ -12,7 +12,7 @@ let secretKey = process.env.JWT_SECRETKEY;
         return res.status(401).send("Unauthorized");
     }
     console.log(decoded);
-    req.userID = decoded.userID;
+    req.user = decoded;
 
     next();}
     catch(err){

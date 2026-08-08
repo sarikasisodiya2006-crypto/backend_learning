@@ -1,6 +1,7 @@
 const  validationMiddleware = require('../middleware/validationMiddleware');
 const validationSchema = require('../validationSchema/createProductValidationSchema');
 const authMiddelware = require('../middleware/authValidation');
+const authorization = require('../middleware/authorization');
 const express = require("express");
 const router = express.Router();
 const  {
@@ -11,8 +12,8 @@ const  {
             
         } = require("../controllers/productController")
 
- router.post("/createProduct",authMiddelware,validationMiddleware(validationSchema),createProduct );
+ router.post("/createProduct",authMiddelware,validationMiddleware(validationSchema),authorization("admin","seller"),createProduct );
  router.get("/getProduct",authMiddelware,getProduct);
-  router.delete("/deleteStudentbySKU/:sku",authMiddelware,deleteStudentbySKU);
-  router.put("/updateProduct/:sku",authMiddelware,updateProduct);
+  router.delete("/deleteStudentbySKU/:sku",authorization("admin","seller"),authMiddelware,deleteStudentbySKU);
+  router.put("/updateProduct/:sku",authorization("admin","seller"),authMiddelware,updateProduct);
   module.exports = router;

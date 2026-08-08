@@ -8,6 +8,7 @@ const schema = joi.object({
                 gender : joi.string().valid("male","female","other").required(),
                 createPassword : joi.string().min(2).max(128).required().trim(),
                 confirmPassword : joi.string().min(2).max(128).required().trim(),
+                role : joi.string().required().valid("admin","user","seller"),
             });
 
             module.exports = schema;

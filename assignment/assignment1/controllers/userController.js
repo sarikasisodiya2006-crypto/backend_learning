@@ -27,6 +27,8 @@ const login = async (req, res) => {
             httpOnly: true,
         });
 
+        
+
         return res.status(200).send(
             `Welcome ${result.firstname}! You are logged in successfully!`
         );
