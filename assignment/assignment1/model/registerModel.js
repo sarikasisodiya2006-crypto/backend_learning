@@ -54,5 +54,21 @@ const  registerSchema = new mongoose.Schema({
     }
 });
 
+
+registerSchema.virtual("addresses", {
+    ref: "address",
+    localField: "_id",
+    foreignField: "user",
+});
+
+registerSchema.set("toJSON", {
+    virtuals: true
+});
+
+registerSchema.set("toObject", {
+    virtuals: true
+});
+
+
 const registerModel = mongoose.model("register",registerSchema);
 module.exports = registerModel;

@@ -1,4 +1,5 @@
-const { registerModel } = require("../model");
+const registerModel  = require("../model/registerModel");
+const{addressModel}= require("../model/addressModel");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 
@@ -79,7 +80,43 @@ const loginUser = async (data) => {
     };
 };
 
+//===============getallusers==========
+const getAllUsersServices = async()=>{
+    const users = await registerModel.find().populate("addresses");
+    return users;
+};
+
+//=======get user by id===========
+const getUserByIdService = async (id) => {
+    const user = await registerModel
+        .findById(id)
+        .select("-Password").populate("addresses");
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    return user;
+};
+
+//======my profile===============================
+
+const getMyProfileService = async (userId) => {
+    const user = await registerModel
+        .findById(userId)
+        .select("-Password").populate("addresses");
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    return user;
+};
+
 module.exports = {
     registerUser,
     loginUser,
+    getAllUsersServices,
+    getUserByIdService,
+    getMyProfileService,
 };

@@ -1,4 +1,4 @@
 const registerModel = require('./registerModel');
 const productModel = require('./productModel');
-
-module.exports = {registerModel,productModel};
+const addressModel = require('./addressModel');
+module.exports = {registerModel,productModel,addressModel};

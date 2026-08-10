@@ -1,6 +1,9 @@
 const {
     registerUser,
     loginUser,
+    getAllUsersServices,
+    getUserByIdService,
+    getMyProfileService,
 } = require("../service/authService");
 
 // ================= Register =================
@@ -53,8 +56,60 @@ const logout = async (req, res) => {
     }
 };
 
+//================get all users ======================
+const getAllUsers = async(req,res)=>{
+    try {
+         const result = await getAllUsersServices();
+
+        res.status(200).send({
+            message: "All users fetched successfully",
+            users: result});
+        
+    } catch (error) {
+        console.log(error);
+
+        return res.status(400).send(error.message);
+    }
+};
+
+//===========getallusersbyID==========
+const getUserById = async (req, res) => {
+    try {
+        const user = await getUserByIdService(req.params.id);
+
+        res.status(200).json({
+            message: "User fetched successfully",
+            user
+        });
+    } catch (err) {
+        res.status(404).json({
+            message: err.message
+        });
+    }
+};
+
+//======my profile=======================
+
+const getMyProfile = async (req, res) => {
+    try {
+        const user = await getMyProfileService(req.user.userID);
+
+        res.status(200).json({
+            message: "Profile fetched successfully",
+            user
+        });
+    } catch (err) {
+        res.status(404).json({
+            message: err.message
+        });
+    }
+};
+
 module.exports = {
     register,
     login,
     logout,
+    getAllUsers,
+    getUserById,
+    getMyProfile,
 };

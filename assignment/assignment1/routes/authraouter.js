@@ -2,17 +2,26 @@ const  validationMiddleware = require('../middleware/validationMiddleware');
 const registerSchema = require('../validationSchema/registerValidationSchema');
 const loginSchema = require('../validationSchema/loginValidationSchema');
 const authMiddelware = require('../middleware/authValidation');
+const authorization = require("../middleware/authorization");
 const express = require("express");
 const router = express.Router();
 const {
     register,
     login,
-    logout
+    logout,
+    getAllUsers,
+    getUserById,
+    getMyProfile,
+
 } = require("../controllers/userController");
 
 
-router.post("/register", validationMiddleware(registerSchema),register);
+router.post("/register",validationMiddleware(registerSchema),register);
  router.post("/login",validationMiddleware(loginSchema),login);
   router.get("/logout",authMiddelware,logout);
+  router.get("/getallUsers",authMiddelware,authorization("admin"),getAllUsers);
+  router.get("/getUserbyID/:id",authMiddelware,authorization("admin"),getUserById);
+  router.get("/getMyProfile",authMiddelware,authorization("admin","seller","user"),getMyProfile);
+  
 
 module.exports = router;
