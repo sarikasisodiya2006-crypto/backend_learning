@@ -9,6 +9,9 @@ const schema = joi.object({
     city: joi.string().required(),
     state: joi.string().required(),
     pincode: joi.string().required(),
+    longitude: joi.number().required(),
+    latitude: joi.number().required(),
+
 });
 
 module.exports = schema;

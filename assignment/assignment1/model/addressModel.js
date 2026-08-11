@@ -28,6 +28,28 @@ const addressSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  location : {
+    type:{
+      type:String,
+      enum:["Point"],
+      required:true,
+    },
+    coordinates:{
+      type:[Number],
+      required:true,
+
+    }
+  }
+});
+
+addressSchema.index(
+    { user: 1, type: 1 },
+    { unique: true }
+);
+
+// GeoJSON ke liye
+addressSchema.index({
+    location: "2dsphere"
 });
 const addressModel = mongoose.model("address", addressSchema);
 module.exports = addressModel;

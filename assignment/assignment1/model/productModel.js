@@ -26,5 +26,8 @@ const productSchema = new mongoose.Schema({
         },
 });
 
+productSchema.index({category:1});
+productSchema.index({price :1});
+
 const productModel = mongoose.model("products",productSchema);
 module.exports = productModel;
