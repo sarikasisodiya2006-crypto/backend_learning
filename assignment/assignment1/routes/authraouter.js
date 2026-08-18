@@ -13,6 +13,9 @@ const {
     getAllUsers,
     getUserById,
     getMyProfile,
+    updateProfilePicture,
+    deleteProfilePicture,
+    refreshAccessToken,
 
 } = require("../controllers/userController");
 
@@ -23,6 +26,23 @@ router.post("/register", memoryUpload.single("profilePicture"),validationMiddlew
   router.get("/getallUsers",authMiddelware,authorization("admin"),getAllUsers);
   router.get("/getUserbyID/:id",authMiddelware,authorization("admin"),getUserById);
   router.get("/getMyProfile",authMiddelware,authorization("admin","seller","user"),getMyProfile);
+
+  router.post("/updateprofille",
+    authMiddelware,
+    memoryUpload.single("profilePicture"),
+    updateProfilePicture);
+
+    router.delete(
+    "/deleteProfilePicture",
+    authMiddelware,
+    deleteProfilePicture
+);
+
+
+router.post(
+    "/refreshToken",
+    refreshAccessToken
+);
   
 
 module.exports = router;

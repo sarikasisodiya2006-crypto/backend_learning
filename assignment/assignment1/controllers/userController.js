@@ -1,4 +1,6 @@
 const cloudinary = require("../config/cloudinary");
+const registerModel = require("../model/registerModel");
+const jwt = require("jsonwebtoken");
 const {
     registerUser,
     loginUser,
@@ -13,7 +15,7 @@ const register = async (req, res) => {
     try {
         // const message = await registerUser(req.body);
         // return res.status(201).send(message);
-        let profilePictureUrl = null;
+        let profilePicture = null;
 
         if (req.file) {
 
@@ -37,12 +39,15 @@ const register = async (req, res) => {
                 uploadStream.end(req.file.buffer);
             });
 
-            profilePictureUrl = result.secure_url;
+            profilePicture = {
+        url: result.secure_url,
+        publicId: result.public_id
+    };
         }
 
              const message = await registerUser({
             ...req.body,
-            profilePicture: profilePictureUrl
+            profilePicture: profilePicture
         });
 
 
@@ -63,6 +68,14 @@ const login = async (req, res) => {
 
         res.cookie("givenToken", result.token, {
             httpOnly: true,
+            secure: false,
+            sameSite: "lax"
+        });
+
+        res.cookie("refreshToken", result.refreshToken, {
+                httpOnly: true,
+                secure: false,
+                sameSite: "lax"
         });
 
         
@@ -140,6 +153,177 @@ const getMyProfile = async (req, res) => {
     }
 };
 
+
+//====================update profile picture =======================
+
+const updateProfilePicture = async (req, res) => {
+
+    try {
+
+        if (!req.file) {
+            return res.status(400).json({
+                message: "Please upload a profile picture"
+            });
+        }
+
+        const user = await registerModel.findById(req.user.userID);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        // Upload new image
+        const result = await new Promise((resolve, reject) => {
+
+            const uploadStream = cloudinary.uploader.upload_stream(
+                {
+                    folder: "profilePictures"
+                },
+                (error, result) => {
+
+                    if (error) {
+                        reject(error);
+                    } else {
+                        resolve(result);
+                    }
+
+                }
+            );
+
+            uploadStream.end(req.file.buffer);
+        });
+
+
+        // Delete old image
+        if (user.profilePicture?.publicId) {
+
+            await cloudinary.uploader.destroy(
+                user.profilePicture.publicId
+            );
+        }
+
+
+        // Save new image details
+        user.profilePicture = {
+            url: result.secure_url,
+            publicId: result.public_id
+        };
+
+        await user.save();
+
+
+        return res.status(200).json({
+            message: "Profile picture updated successfully",
+            profilePicture: user.profilePicture
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+            message: "Profile picture update failed",
+            error: error.message
+        });
+    }
+};
+
+
+
+//===============delete profile picture==============
+const deleteProfilePicture = async (req, res) => {
+
+    try {
+
+        const user = await registerModel.findById(req.user.userID);
+
+        if (!user) {
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+
+        if (!user.profilePicture?.publicId) {
+            return res.status(404).json({
+                message: "Profile picture not found"
+            });
+        }
+
+        await cloudinary.uploader.destroy(
+            user.profilePicture.publicId
+        );
+
+        user.profilePicture = {
+            url: null,
+            publicId: null
+        };
+
+        await user.save();
+
+        return res.status(200).json({
+            message: "Profile picture deleted successfully"
+        });
+
+    } catch (error) {
+
+        return res.status(500).json({
+            message: "Profile picture deletion failed",
+            error: error.message
+        });
+    }
+};
+
+
+
+//==========refresh token============
+const refreshAccessToken = async (req, res) => {
+
+    try {
+
+        const refreshToken = req.cookies.refreshToken;
+
+        if (!refreshToken) {
+            return res.status(401).json({
+                message: "Refresh token missing"
+            });
+        }
+
+        const decoded = jwt.verify(
+            refreshToken,
+            process.env.JWT_SECRETKEY_REFRESH
+        );
+
+        const newToken = jwt.sign(
+            {
+                userID: decoded.userID
+            },
+            process.env.JWT_SECRETKEY,
+            {
+                expiresIn: "15m"
+            }
+        );
+
+        res.cookie("givenToken", newToken, {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax"
+        });
+
+        return res.status(200).json({
+            message: "Access token refreshed successfully"
+        });
+
+    } catch (error) {
+
+        return res.status(401).json({
+            message: "Invalid or expired refresh token"
+        });
+
+    }
+};
+
+
+
 module.exports = {
     register,
     login,
@@ -147,4 +331,7 @@ module.exports = {
     getAllUsers,
     getUserById,
     getMyProfile,
+    updateProfilePicture,
+    deleteProfilePicture,
+    refreshAccessToken
 };

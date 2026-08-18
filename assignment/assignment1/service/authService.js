@@ -73,11 +73,22 @@ const loginUser = async (data) => {
     const token = jwt.sign(
         { userID: userExist._id ,role:userExist.role},
         process.env.JWT_SECRETKEY,
-        { expiresIn: "1h" }
+        { expiresIn: "15m" }
     );
+
+    const refreshToken = jwt.sign(
+    {
+        userID: userExist._id
+    },
+    process.env.JWT_SECRETKEY_REFRESH,
+    {
+        expiresIn: "7d"
+    }
+);
 
     return {
         token,
+        refreshToken,
         firstname: userExist.firstname,
     };
 };
