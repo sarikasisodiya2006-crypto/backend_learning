@@ -1,3 +1,4 @@
+const cloudinary = require("../config/cloudinary");
 const {
     registerUser,
     loginUser,
@@ -10,9 +11,43 @@ const {
 
 const register = async (req, res) => {
     try {
-        const message = await registerUser(req.body);
+        // const message = await registerUser(req.body);
+        // return res.status(201).send(message);
+        let profilePictureUrl = null;
+
+        if (req.file) {
+
+            const result = await new Promise((resolve, reject) => {
+
+                const uploadStream = cloudinary.uploader.upload_stream(
+                    {
+                        folder: "profilePictures"
+                    },
+
+                    (error, result) => {
+
+                        if (error) {
+                            reject(error);
+                        } else {
+                            resolve(result);
+                        }
+                    }
+                );
+
+                uploadStream.end(req.file.buffer);
+            });
+
+            profilePictureUrl = result.secure_url;
+        }
+
+             const message = await registerUser({
+            ...req.body,
+            profilePicture: profilePictureUrl
+        });
+
 
         return res.status(201).send(message);
+
     } catch (err) {
         console.log(err);
 

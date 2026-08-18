@@ -7,6 +7,7 @@ const connectDB = require('./db.js');
 const authRoutes = require("./routes/authraouter.js");
 const productRoutes = require("./routes/productroutes.js");
 const addressRoutes = require('./routes/addressrouter.js');
+const uploadRoutes = require('./routes/uploadRoutes.js');
 
 const app = express();
 app.use(express.json());
@@ -20,7 +21,7 @@ app.use(cookieParser());
 app.use("/auth", authRoutes);
 app.use("/product", productRoutes);
 app.use("/address",addressRoutes);
-
+app.use("/upload",uploadRoutes);
 
 
 connectDB()

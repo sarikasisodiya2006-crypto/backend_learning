@@ -15,6 +15,7 @@ const registerUser = async (data) => {
         role,
         createPassword,
         confirmPassword,
+        profilePicture
         
     } = data;
 
@@ -41,6 +42,7 @@ const registerUser = async (data) => {
         gender,
         role,
         Password: hashedPassword,
+        profilePicture
     };
 
     await registerModel.create(userData);

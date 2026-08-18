@@ -51,7 +51,11 @@ const  registerSchema = new mongoose.Schema({
         minlength:2,
         maxlength:128,
         trim:true,
-    }
+    },
+    profilePicture: {
+    type: String,
+    default: null
+}
 });
 
 
